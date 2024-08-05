@@ -3,7 +3,7 @@ from django.contrib.auth.forms import AuthenticationForm
 from django.core.validators import RegexValidator
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
-from .models import User, calificacion, asignatura
+from .models import User, calificacion, asignatura, horario, actividad
 
 # Formulario de inicio de sesión
 class loginForm(AuthenticationForm):
@@ -116,17 +116,40 @@ class updateUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
-
-class calificacionForm(forms.ModelForm):
-        
-    tarea = forms.CharField(
-        label='Tareas',
-        max_length=80,
+class BuscarUsuarioForm(forms.Form):
+    dni = forms.CharField(
+        label='Buscar Usuario por DNI',
+        validators=[RegexValidator(regex=r'^\d{10}$', message='El número de cédula debe tener exactamente 10 dígitos')],
         widget=forms.TextInput(attrs={
-             'placeholder': 'examen',
-             'class': 'campo',
-             'autofocus': True,
-             'required' : True,
+            'placeholder': 'Cédula',
+            'class': 'campo',
+            'required': True,
+        }),
+        error_messages={
+            'invalid': 'Ingrese un número de cédula válido',
+        }
+    )
+    
+class calificacionForm(forms.ModelForm):
+    dni = forms.CharField(
+        label='Buscar Usuario por DNI',
+        validators=[RegexValidator(regex=r'^\d{10}$', message='El número de cédula debe tener exactamente 10 dígitos')],
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Cédula',
+            'class': 'campo',
+            'required': True,
+        }),
+        error_messages={
+            'invalid': 'Ingrese un número de cédula válido',
+        }
+    )  
+    actividad = forms.ModelChoiceField(
+        queryset=actividad.objects.all(),
+        label='Actividad',
+        widget=forms.Select(attrs={
+            'class': 'campo',
+            'placeholder': 'Selecionar',
+            'required': True,
         })
     )
     nota = forms.IntegerField(
@@ -137,15 +160,15 @@ class calificacionForm(forms.ModelForm):
             'required': True,
         })
     )
-    fecha_entrega = forms.DateField(
-        label='Fecha Entrega',
-        widget=forms.DateInput(attrs={
-            'type': 'date',
-            'class': 'campo__date',
+    comentario = forms.CharField(
+        label='Comentario',
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Comentarios de la tarea',
+            'class': 'campo__area',
             'required': True,
+            'rows': 5,
         })
-    )
-    
+    )  
     asignatura = forms.ModelChoiceField(
         queryset=asignatura.objects.all(),
         label='Asignatura',
@@ -159,8 +182,14 @@ class calificacionForm(forms.ModelForm):
 
     class Meta:
         model = calificacion
-        fields = ['tarea', 'nota', 'fecha_entrega', 'comentario', 'asignatura']
-
+        fields = ['actividad', 'nota', 'fecha_entrega', 'comentario', 'asignatura']
+        widgets = {
+            'fecha_entrega': forms.DateInput(attrs={
+                'type': 'date',
+                'class': 'campo__date',
+                'required': True,
+            }),
+        }
 
 
 #formulario de asignatura
@@ -178,7 +207,7 @@ class asignaturaForm(forms.ModelForm):
         label='Descripción',
         widget=forms.Textarea(attrs={
             'placeholder': 'Descripción de la Asignatura',
-            'class': 'campo',
+            'class': 'campo__area',
             'required': True,
             'rows': 5,
         })
@@ -204,3 +233,122 @@ class asignaturaForm(forms.ModelForm):
     class Meta:
         model = asignatura
         fields = ['nombre', 'descripcion', 'creditos', 'curso']
+
+class actividadForm(forms.ModelForm):
+
+    nombre = forms.CharField(
+        label='Nombre de la Actividad',
+        widget=forms.TextInput(attrs={
+            'placeholder': 'Nombre de la actividad',
+            'class': 'campo',
+            'required': True,
+            'rows': 5,
+        })
+    )
+
+    asignatura = forms.ModelChoiceField(
+        queryset=asignatura.objects.all(),
+        label='Asignatura',
+        widget=forms.Select(attrs={
+            'class': 'campo',
+            'placeholder': 'Selecionar',
+            'required': True,
+        })
+    )
+ 
+    descripcion = forms.CharField(
+        label='Descripción',
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Descripción de la Actividad',
+            'class': 'campo__area',
+            'required': True,
+            'rows': 5,
+        })
+    )
+
+    fecha_inicio = forms.DateField(
+        label='Fecha de inicio',
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'campo__date',
+            'required': True,
+        })
+    )
+
+    fecha_fin = forms.DateField(
+        label='Fecha del final',
+        widget=forms.DateInput(attrs={
+            'type': 'date',
+            'class': 'campo__date',
+            'required': True,
+        })
+    )
+
+    estado = forms.ChoiceField(
+        label='Estado',
+        choices=[
+            ('pendiente', 'Pendiente'),
+            ('en_progreso', 'En Progreso'),
+            ('completada', 'Completada')
+        ],
+        widget=forms.Select(attrs={
+            'class': 'campo',
+            'required': True,
+        })
+    )
+
+    comentario = forms.CharField(
+        label='Comentario',
+        widget=forms.Textarea(attrs={
+            'placeholder': 'Comentario de la actividad',
+            'class': 'campo__area',
+            'required': True,
+            'rows': 5,
+        })
+    )
+
+    class Meta:
+        model = actividad
+        fields = ['nombre', 'asignatura', 'descripcion', 'fecha_inicio', 'fecha_fin', 'estado', 'comentario']
+
+
+class horarioForm(forms.ModelForm):
+    asignatura = forms.ModelChoiceField(
+        queryset=asignatura.objects.all(),
+        label='Asignatura',
+        widget=forms.Select(attrs={
+            'class': 'campo',
+            'placeholder': 'Selecionar',
+            'required': True,
+        })
+    )
+
+    dia = forms.ChoiceField(
+        label='Día de la Semana',
+        choices=horario.DIAS_SEMANA,
+        widget=forms.Select(attrs={
+            'class': 'campo',
+            'required': True,
+        })
+    )
+    
+    hora_inicio = forms.TimeField(
+        label='Hora de Inicio',
+        widget=forms.TimeInput(attrs={
+            'type': 'time',
+            'class': 'campo',
+            'required': True,
+        })
+    )
+    
+    hora_fin = forms.TimeField(
+        label='Hora de Fin',
+        widget=forms.TimeInput(attrs={
+            'type': 'time',
+            'class': 'campo',
+            'required': True,
+        })
+    )
+    class Meta:
+        model = horario
+        fields = ['asignatura', 'dia', 'hora_inicio', 'hora_fin']

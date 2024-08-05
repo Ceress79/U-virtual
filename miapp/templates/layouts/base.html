@@ -33,16 +33,17 @@
                 <li class="option__user">
                     <div class="profile">
                         {% if request.user.profile_picture and request.user.profile_picture.url %}
-                        <img src="{{ request.user.profile_picture.url }}" alt="Foto de perfil media">
+                            <img src="{{ request.user.profile_picture.url }}" alt="Foto de perfil media">
                         {% else %}
-                        <img src="{% static 'img/default.png' %}" alt="Foto de perfil">
+                            <img src="{% static 'img/default.png' %}" alt="Foto de perfil">
                         {% endif %}
                     </div>
                     <span>{{ request.user.username }}</span>
                 </li>
             </ul>
-
         </div>
+        <div class="dropdown" id="dropdown"><span>No tienes Notificaciones</span></div>
+        <script src="{% static './script/scripts.js' %}"></script>
     </header>
 
     <div class="container">
@@ -58,7 +59,7 @@
                         <span>Asignatura</span>
                     </a>
                 </li>
-                <li class="sidebar__menu--item"><a href="#">
+                <li class="sidebar__menu--item"><a href="{% url 'actividad' %}">
                         <i class="fa fa-solid fa-tasks"></i>
                         <span>Actividad</span>
                     </a>
@@ -68,8 +69,7 @@
                         <span>Calificaciones</span>
                     </a>
                 </li>
-                <li class="sidebar__menu--item">
-                    <a href="#">
+                <li class="sidebar__menu--item"><a href="{% url 'horario' %}">
                         <i class="fa fa-solid fa-calendar-day"></i>
                         <span>Horario</span>
                     </a>
@@ -105,7 +105,7 @@
                 </li>
             </ul>
         </nav>
-        <section class="content">
+        <section class="section__content">
             {% block content %}{% endblock %}
         </section>
     </div>

@@ -1,0 +1,44 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static './css/form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    
+    <div class="form__image--container">
+        <img src="{% static './img/cards/horario.png' %}" alt="Descripción de la imagen" class="form__image">
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form__container">
+            <div class="form__field">
+                <label for="{{ formHorari.asignatura.id_for_label }}" class="required">{{ formHorari.asignatura.label }}</label>
+                {{ formHorari.asignatura }}
+            </div>
+            <div class="form__field">
+                <label for="{{ formHorari.dia.id_for_label }}" class="required">{{ formHorari.dia.label }}</label>
+                {{ formHorari.dia }}
+            </div>
+            <div class="form__field">
+                <label for="{{ formHorari.hora_inicio.id_for_label }}" class="required">{{ formHorari.hora_inicio.label }}</label>
+                {{ formHorari.hora_inicio }}
+            </div>
+            <div class="form__field">
+                <label for="{{ formHorari.hora_fin.id_for_label }}" class="required">{{ formHorari.hora_fin.label }}</label>
+                {{ formHorari.hora_fin }}
+            </div>
+            
+        </div>
+        
+        <footer class="form__footer">
+            <input type="submit" value="Enviar" class="form__button" />
+        </footer>
+    </form>
+</div>
+
+
+{% endblock %}

@@ -117,6 +117,7 @@ html {
     display: flex;
     align-items: center;
     justify-content: center;
+    cursor: pointer;
     transition: all .3s ease;
 }
 
@@ -128,10 +129,31 @@ html {
 
 .option__notifications {
     width: 40px;
-    border-radius: 50%;
     border: none;
+    border-radius: 50%;
     background: none;
     text-decoration: none;
+}
+
+.dropdown {
+    display: none; /* Inicialmente oculto */
+    position: absolute;
+    top: 75px;
+    right: 270px;
+    width: 200px;
+    min-height: 200px;
+    padding: 10px;
+    background-color: #e3e3e3d5;
+    box-shadow: 0 0 10px #0000001a;
+    border-radius: 5px;
+    z-index: 1000; /* Asegura que esté por encima de otros elementos */
+}
+
+.dropdown span {
+    display: block;
+    width: 100%;
+    font-size: 12px;
+    text-align: center;
 }
 
 .option__user {
@@ -166,6 +188,9 @@ html {
     color: #000000;
     box-shadow: 0px 4px 6px #0000001a;
 }
+
+
+
 
 
 /* Contenedor Principal */
@@ -277,7 +302,7 @@ html {
     display: inline-block; /* Mostrar texto al expandir */
 }
 
-.content {
+.section__content {
     display: flex;
     justify-content: center;
     align-items: center;

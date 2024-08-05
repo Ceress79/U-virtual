@@ -1,0 +1,62 @@
+{% extends 'layouts/base.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static './css/form.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    
+    <div class="form__image--container">
+        <img src="{% static './img/cards/actividad.jpg' %}" alt="Descripción de la imagen" class="form__image">
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="form__container">
+            <div class="form__field">
+                <label for="{{ formActividad.nombre.id_for_label }}" class="required">{{ formActividad.nombre.label }}</label>
+                {{ formActividad.nombre }}
+            </div>
+
+            <div class="form__field">
+                <label for="{{ formActividad.descripcion.id_for_label }}" class="required">{{ formActividad.descripcion.label }}</label>
+                {{ formActividad.descripcion }}
+            </div>
+
+            <div class="form__field">
+                <label for="{{ formActividad.fecha_inicio.id_for_label }}" class="required">{{ formActividad.fecha_inicio.label }}</label>
+                {{ formActividad.fecha_inicio }}
+            </div>
+
+            <div class="form__field">
+                <label for="{{ formActividad.fecha_fin.id_for_label }}" class="required">{{ formActividad.fecha_fin.label }}</label>
+                {{ formActividad.fecha_fin }}
+            </div>
+
+            <div class="form__field">
+                <label for="{{ formActividad.comentario.id_for_label }}" class="required">{{ formActividad.comentario.label }}</label>
+                {{ formActividad.comentario }}
+            </div>
+
+            <div class="form__field">
+                <label for="{{ formActividad.estado.id_for_label }}" class="required">{{ formActividad.estado.label }}</label>
+                {{ formActividad.estado }}
+            </div>
+
+            <div class="form__field">
+                <label for="{{ formActividad.asignatura.id_for_label }}" class="required">{{ formActividad.asignatura.label }}</label>
+                {{ formActividad.asignatura }}
+            </div>
+
+        </div>
+        
+        <footer class="form__footer">
+            <input type="submit" value="Enviar" class="form__button" />
+        </footer>
+    </form>
+</div>
+
+
+{% endblock %}

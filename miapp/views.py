@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
-from .models import *
-from .forms import updateUserForm, loginForm, calificacionForm, asignaturaForm
+from .models import User, asignatura, horario, actividad
+from .forms import updateUserForm, loginForm, calificacionForm, asignaturaForm, horarioForm, actividadForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView, LogoutView
 
@@ -19,9 +19,9 @@ class CustomLogoutView(LogoutView):
 def index_view(request):
     links = [
         {'title': 'Asignatura', 'image': './img/cards/asignatura.png', 'url': 'asignatura'},
-        {'title': 'Actividad', 'image': './img/cards/actividad.jpg', 'url': '#'},
+        {'title': 'Actividad', 'image': './img/cards/actividad.jpg', 'url': 'actividad'},
         {'title': 'Calificaciones', 'image': './img/cards/calificacion.jpg', 'url': 'calificacion'},
-        {'title': 'Horario', 'image': './img/cards/horario.png', 'url': '#'},
+        {'title': 'Horario', 'image': './img/cards/horario.png', 'url': 'horario'},
         {'title': 'Citación', 'image': './img/cards/citacion.jpeg', 'url': '#'},
         {'title': 'Tutoria', 'image': './img/cards/tutoria.jpg', 'url': '#'},
         {'title': 'Conducta', 'image': './img/cards/conducta.jpg', 'url': '#'},
@@ -51,25 +51,39 @@ def updateUser_view(request):
 @login_required
 def calificacion_view(request):
     usuario = None
+    userSearch = False
+
     if request.method == 'GET' and 'dni' in request.GET:
         dni = request.GET.get('dni')
-        try:
-            usuario = User.objects.get(dni=dni)
-        except User.DoesNotExist:
-            usuario = None
+        if dni:
+            try:
+                usuario = User.objects.get(dni=dni)
+                if usuario.rol == 'estudiante':
+                    userSearch = True
+                else:
+                    usuario = None
+                    userSearch = True
+            except User.DoesNotExist:
+                userSearch = True  # Indicar que la búsqueda se realizó pero no se encontró el usuario
 
     if request.method == 'POST':
-        Caliform = calificacionForm(request.POST, request.FILES)
+        Caliform = calificacionForm(request.POST)
         if Caliform.is_valid():
-            Caliform.save()
+            calificacion_instance = Caliform.save(commit=False)
+            calificacion_instance.usuario = usuario  # Asigna el usuario encontrado
+            calificacion_instance.save()
             return redirect('home')
     else:
         Caliform = calificacionForm()
     
     return render(request, 'miapp/registrar_calificacion.html', {
         'formCali': Caliform,
-        'usuario': usuario
+        'usuario': usuario,
+        'userSearch': userSearch
     })
+
+
+
 
 @login_required
 def asignatura_view(request):
@@ -83,3 +97,31 @@ def asignatura_view(request):
     return render(request, 'miapp/registrar_asignatura.html', {
         'formAsig': asigForm
     })
+
+@login_required
+def actividad_view(request):
+    if request.method == 'POST':
+        activForm = actividadForm(request.POST)
+        if activForm.is_valid():
+            activForm.save()
+            return redirect('home')
+    else:
+        activForm = actividadForm()
+    return render(request, 'miapp/registrar_actividad.html', {
+        'formActividad': activForm
+    
+    })
+
+
+@login_required
+def horario_view(request):
+    if request.method == 'POST':
+        horariForm = horarioForm(request.POST)
+        if horariForm.is_valid():
+            horariForm.save()
+            return redirect('home')
+    else:
+        horariForm = horarioForm()
+    return render(request, 'miapp/registrar_horario.html', {
+        'formHorari': horariForm
+        })

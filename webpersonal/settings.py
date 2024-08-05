@@ -77,11 +77,11 @@ WSGI_APPLICATION = 'webpersonal.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'u-virtual',
-        'USER': 'postgres',
-        'PASSWORD': '123456',  
-        'HOST': 'localhost',
-        'PORT': '',
+        'NAME': 'dbhqcpr4t8u368',
+        'USER': 'uc6vkv5kka60kf',
+        'PASSWORD': 'p4f70ad69819f06162113e61003966fcc8a7e67b3c4a43a6efd2dc881da81154e',  
+        'HOST': 'c5hilnj7pn10vb.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com',
+        'PORT': '5432',
     }
 }
 

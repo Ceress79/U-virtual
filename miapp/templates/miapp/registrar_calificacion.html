@@ -6,57 +6,61 @@
 {% endblock %}
 
 {% block content %}
-<div class="user">
+<div class="content">
     <!-- Formulario para buscar usuario por DNI -->
-    <form method="GET" action="{% url 'calificacion' %}" class="search-form">
-        <div class="form__container">
+    <div class="search__user">
+        <form method="GET" action="{% url 'calificacion' %}">
             <div class="form__field">
-                <label for="dni">Buscar Usuario por DNI</label>
-                <input type="text" name="dni" id="dni" required>
-                <button type="submit">Buscar</button>
+                <label for="{{ formCali.dni.id_for_label }}" class="required">{{ formCali.dni.label }}</label>
+                {{ formCali.dni}}
+                <button type="submit" class="form__button">Buscar</button>
             </div>
-        </div>
-    </form>
-
-    {% if usuario %}
-    <!-- Detalles del usuario -->
-    <div class="user__details">
-        <img src="{{ usuario.profile_picture.url }}" alt="Foto de perfil" class="user__profile-picture">
-        <h3>{{ usuario.first_name }} {{ usuario.last_name }}</h3>
-        <p>Email: {{ usuario.email }}</p>
-        <p>Rol: {{ usuario.get_rol_display }}</p>
+        </form>
+        {% if userSearch %}
+            {% if usuario %}
+                <!-- Detalles del usuario -->
+                <div class="user__details">
+                    {% if usuario.profile_picture and usuario.profile_picture.url %}
+                        <img src="{{ usuario.profile_picture.url }}" alt="Foto de perfil" class="user__profile-picture">
+                    {% else %}
+                        <img src="{% static 'img/default.png' %}" alt="Foto de perfil" class="user__profile-picture">
+                    {% endif %}
+                    <h3>{{ usuario.first_name }} {{ usuario.last_name }}</h3>
+                    <p>Email: {{ usuario.email }}</p>
+                    <p>Rol: {{ usuario.get_rol_display }}</p>
+                </div>
+            {% else %}
+                <p>DNI no existe.</p>
+            {% endif %}
+        {% endif %}
     </div>
-    {% else %}
-    <!-- Mensaje si el usuario no se encuentra -->
-    <p>No se encontró el usuario con el DNI proporcionado.</p>
-    {% endif %}
+
 
     <!-- Formulario de calificación -->
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
         <div class="form__container">
             <div class="form__field">
-                <label for="{{ formCali.tarea.id_for_label }}" class="required">{{ formCali.tarea.label }}</label>
-                {{ formCali.tarea }}
+                <label for="{{ formCali.asignatura.id_for_label }}" class="required">{{ formCali.asignatura.label }}</label>
+                {{ formCali.asignatura }}
+            </div>
+            <div class="form__field">
+                <label for="{{ formCali.actividad.id_for_label }}" class="required">{{ formCali.actividad.label }}</label>
+                {{ formCali.actividad }}
             </div>
             <div class="form__field">
                 <label for="{{ formCali.nota.id_for_label }}" class="required">{{ formCali.nota.label }}</label>
                 {{ formCali.nota }}
             </div>
             <div class="form__field">
-                <label for="{{ formCali.fecha_entrega.id_for_label }}" class="required">{{ formCali.fecha_entrega.label }}</label>
-                {{ formCali.fecha_entrega }}
-            </div>
-            <div class="form__field">
                 <label for="{{ formCali.comentario.id_for_label }}" class="required">{{ formCali.comentario.label }}</label>
                 {{ formCali.comentario }}
             </div>
             <div class="form__field">
-                <label for="{{ formCali.asignatura.id_for_label }}" class="required">{{ formCali.asignatura.label }}</label>
-                {{ formCali.asignatura }}
+                <label for="{{ formCali.fecha_entrega.id_for_label }}" class="required">{{ formCali.fecha_entrega.label }}</label>
+                {{ formCali.fecha_entrega }}
             </div>
         </div>
-        
         <footer class="form__footer">
             <input type="submit" value="Enviar" class="form__button" />
         </footer>

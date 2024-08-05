@@ -3,6 +3,20 @@ import os
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db.models.signals import post_delete
+from django.utils import timezone
+
+class asignatura(models.Model):
+    nombre = models.CharField(max_length=100)
+    descripcion = models.TextField()
+    creditos = models.IntegerField()
+    curso = models.CharField(max_length=20)
+
+    class Meta:
+        verbose_name = "Asignatura"
+        verbose_name_plural = "Asignaturas"
+    
+    def __str__(self):
+        return self.nombre
 
 # Modelo Usuario personalizado
 class UserManager(BaseUserManager):
@@ -46,6 +60,7 @@ class User(AbstractUser):
         ('estudiante', 'Estudiante')
     ]
     rol = models.CharField(max_length=15, choices=roles)
+    asignatura = models.ForeignKey(asignatura, related_name='usuarios', on_delete=models.SET_NULL, null=True, blank=True)
 
     EMAIL_FIELD = 'email'   
     REQUIRED_FIELDS = ['first_name', 'last_name', 'password']
@@ -74,31 +89,65 @@ def delete_user(sender, instance, **kwargs):
         except OSError:
             pass  # El directorio no está vacío o no se pudo eliminar
 
-class asignatura(models.Model):
-    nombre = models.CharField(max_length=100)
-    descripcion = models.TextField()
-    creditos = models.IntegerField()
-    curso = models.CharField(max_length=20)
+
+class actividad(models.Model):
+    asignatura = models.ForeignKey(asignatura, on_delete=models.CASCADE)
+    nombre = models.CharField(max_length=255)
+    descripcion = models.TextField(blank=True, null=True)
+    fecha_inicio = models.DateField()
+    fecha_fin = models.DateField()
+    
+    ESTADO_CHOICES = [
+        ('pendiente', 'Pendiente'),
+        ('en_progreso', 'En Progreso'),
+        ('completada', 'Completada')
+    ]
+    estado = models.CharField(
+        max_length=20,
+        choices=ESTADO_CHOICES,
+        default='pendiente'
+    )
+    comentario = models.TextField(blank=True, null=True)
 
     class Meta:
-        verbose_name = "Asignatura"
-        verbose_name_plural = "Asignaturas"
-    
+        verbose_name = 'Actividad'
+        verbose_name_plural = 'Actividades'
+        ordering = ['fecha_inicio']
+
     def __str__(self):
-        return self.nombre
+        return f"{self.nombre}"
+
 
 class calificacion(models.Model):
     usuario = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
     asignatura = models.ForeignKey(asignatura, on_delete=models.CASCADE, null=True)
-    tarea = models.CharField(max_length=80)
+    actividad = models.ForeignKey(actividad, on_delete=models.CASCADE, null=True)
     nota = models.DecimalField(max_digits=10, decimal_places=2)
     fecha_entrega = models.DateField(null=True, blank=True)
-    comentario =  models.TextField(blank=True, null=True)
+    comentario = models.TextField(blank=True, null=True)
     
     def __str__(self):
-        return f"{self.tarea} - {self.nota}"
+        return f"{self.actividad} - {self.nota}"
     
     class Meta:
         verbose_name = "Calificación"
         verbose_name_plural = "Calificaciones"
 
+
+class horario(models.Model):
+    DIAS_SEMANA = [
+        ('Lunes', 'Lunes'),
+        ('Martes', 'Martes'),
+        ('Miércoles', 'Miércoles'),
+        ('Jueves', 'Jueves'),
+        ('Viernes', 'Viernes'),
+        ('Sábado', 'Sábado'),
+        ('Domingo', 'Domingo'),
+    ]
+    asignatura = models.ForeignKey(asignatura, on_delete=models.CASCADE, null=True)
+    dia = models.CharField(max_length=10, choices=DIAS_SEMANA)
+    hora_inicio = models.TimeField()
+    hora_fin = models.TimeField()
+
+    def __str__(self):
+        return f"{self.dia} {self.hora_inicio}-{self.hora_fin}"

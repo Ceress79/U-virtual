@@ -6,7 +6,7 @@
 {% endblock %}
 
 {% block content %}
-<div class="user">
+<div class="content">
     
     <div class="form__image--container">
         <img src="{% static './img/cards/asignatura.png' %}" alt="Descripción de la imagen" class="form__image">
@@ -14,7 +14,7 @@
 
     <form method="POST" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="form__container">
+        <div class="form__container form__asignatura">
             <div class="form__field">
                 <label for="{{ formAsig.nombre.id_for_label }}" class="required">{{ formAsig.nombre.label }}</label>
                 {{ formAsig.nombre }}
