@@ -64,13 +64,21 @@ def calificacion_view(request):
                     usuario = None
                     userSearch = True
             except User.DoesNotExist:
+                usuario = None
                 userSearch = True  # Indicar que la búsqueda se realizó pero no se encontró el usuario
 
     if request.method == 'POST':
         Caliform = calificacionForm(request.POST)
-        if Caliform.is_valid():
+        dni = request.POST.get('dni')
+        if dni:
+            try:
+                usuario = User.objects.get(dni=dni)
+            except User.DoesNotExist:
+                usuario = None
+
+        if Caliform.is_valid() and usuario:
             calificacion_instance = Caliform.save(commit=False)
-            calificacion_instance.usuario = usuario  # Asigna el usuario encontrado
+            calificacion_instance.usuario = usuario
             calificacion_instance.save()
             return redirect('home')
     else:

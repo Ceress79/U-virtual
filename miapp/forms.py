@@ -116,6 +116,7 @@ class updateUserForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+
 class BuscarUsuarioForm(forms.Form):
     dni = forms.CharField(
         label='Buscar Usuario por DNI',
@@ -155,7 +156,7 @@ class calificacionForm(forms.ModelForm):
     nota = forms.IntegerField(
         label='Nota',
         widget=forms.NumberInput(attrs={
-            'placeholder': 'nota',
+            'placeholder': 'Nota',
             'class': 'campo',
             'required': True,
         })
@@ -179,7 +180,6 @@ class calificacionForm(forms.ModelForm):
         })
     )
    
-
     class Meta:
         model = calificacion
         fields = ['actividad', 'nota', 'fecha_entrega', 'comentario', 'asignatura']

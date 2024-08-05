@@ -27,6 +27,7 @@
                     {% endif %}
                     <h3>{{ usuario.first_name }} {{ usuario.last_name }}</h3>
                     <p>Email: {{ usuario.email }}</p>
+                    <p>DNI: {{ usuario.dni }}</p>
                     <p>Rol: {{ usuario.get_rol_display }}</p>
                 </div>
             {% else %}
@@ -37,8 +38,11 @@
 
 
     <!-- Formulario de calificación -->
-    <form method="POST" enctype="multipart/form-data">
+    <form method="POST" action="{% url 'calificacion' %}" enctype="multipart/form-data">
         {% csrf_token %}
+        <!-- Campo oculto para pasar el DNI con el formulario -->
+        <input type="hidden" name="dni" value="{{ usuario.dni }}">
+  
         <div class="form__container">
             <div class="form__field">
                 <label for="{{ formCali.asignatura.id_for_label }}" class="required">{{ formCali.asignatura.label }}</label>
@@ -61,6 +65,16 @@
                 {{ formCali.fecha_entrega }}
             </div>
         </div>
+        {% if formCali.errors %}
+        <div class="form__error">
+            <span></span>
+            <ul class="errorlist">
+                {% for error in formCali.errors %}
+                <li>{{ error }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
         <footer class="form__footer">
             <input type="submit" value="Enviar" class="form__button" />
         </footer>
